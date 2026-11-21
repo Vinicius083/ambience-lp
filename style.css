@@ -12,7 +12,7 @@
   --color-olive-light: #4A4F30;
   --color-charcoal: #744B34;
   --color-charcoal-mid: #363A20;
-  --color-warm-gray: #8A7B6F;
+  --color-warm-gray: #6B5D52; /* 6:1 sobre o creme (antes #8A7B6F, 3.8:1) */
   --color-warm-gray-lt: #B5A89A;
   --color-white: #FFFFFF;
   --color-black: #744B34;
@@ -55,6 +55,9 @@
 
 html {
   scroll-behavior: smooth;
+  -webkit-text-size-adjust: 100%;
+  text-size-adjust: 100%;
+  -webkit-tap-highlight-color: transparent;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
 }
@@ -114,6 +117,38 @@ ul {
 .fade-in.visible {
   opacity: 1;
   transform: translateY(0);
+}
+
+/* Foco visível para navegação por teclado / leitor de tela */
+:focus-visible {
+  outline: 2px solid currentColor;
+  outline-offset: 4px;
+  border-radius: 2px;
+}
+
+/* Quem pede menos movimento não recebe animações */
+@media (prefers-reduced-motion: reduce) {
+  html {
+    scroll-behavior: auto;
+  }
+
+  .fade-in {
+    opacity: 1;
+    transform: none;
+    transition: none;
+  }
+
+  .testimonials__marquee {
+    overflow-x: auto;
+  }
+
+  .testimonials__track {
+    animation: none;
+  }
+
+  .testimonials__track[aria-hidden="true"] {
+    display: none;
+  }
 }
 
 /* ═══════════════════════════════════════════════════════
@@ -204,6 +239,9 @@ ul {
   color: var(--color-cream);
   text-decoration: none;
   z-index: 1001;
+  /* área de toque maior sem mudar o visual */
+  padding: 12px 0;
+  margin: -12px 0;
 }
 
 .header__logo-icon {
@@ -263,12 +301,27 @@ ul {
 .header__menu-btn {
   display: none;
   flex-direction: column;
+  align-items: center;
+  justify-content: center;
   gap: 5px;
   background: none;
   border: none;
   cursor: pointer;
-  padding: 8px;
+  /* alvo de toque de 44x44; margem negativa mantém o ícone alinhado ao padding da página */
+  width: 44px;
+  height: 44px;
+  padding: 0;
+  margin-right: -10px;
   z-index: 1001;
+  color: var(--color-white); /* o anel de foco usa currentColor e acompanha o ícone */
+}
+
+.header--scrolled .header__menu-btn {
+  color: var(--color-gold);
+}
+
+.menu-open .header .header__menu-btn {
+  color: var(--color-cream);
 }
 
 .header__menu-btn span {
@@ -300,14 +353,36 @@ ul {
   display: flex;
   align-items: center;
   justify-content: center;
+  overflow-y: auto;
+  padding: 96px 24px 40px;
   opacity: 0;
   pointer-events: none;
-  transition: opacity var(--transition-medium);
+  /* visibility tira os links da ordem de tabulação enquanto o menu está fechado */
+  visibility: hidden;
+  transition: opacity var(--transition-medium), visibility 0s linear 0.6s;
 }
 
 .mobile-nav.active {
   opacity: 1;
   pointer-events: all;
+  visibility: visible;
+  transition-delay: 0s;
+}
+
+/* Com o menu aberto o header volta a ser claro sobre o fundo escuro */
+.menu-open .header {
+  background: transparent;
+  -webkit-backdrop-filter: none;
+  backdrop-filter: none;
+  box-shadow: none;
+}
+
+.menu-open .header .header__logo {
+  color: var(--color-cream);
+}
+
+.menu-open .header .header__menu-btn span {
+  background: var(--color-cream);
 }
 
 .mobile-nav__list {
@@ -337,6 +412,7 @@ ul {
 .hero {
   position: relative;
   height: 100vh;
+  height: 100svh; /* ignora a barra de endereço dinâmica dos navegadores mobile */
   min-height: 700px;
   display: flex;
   align-items: flex-end;
@@ -379,10 +455,10 @@ ul {
 .hero__tagline {
   font-family: var(--font-body);
   font-size: 0.75rem;
-  font-weight: 200;
+  font-weight: 300;
   letter-spacing: 0.2em;
   text-transform: lowercase;
-  color: rgba(255, 255, 255, 0.7);
+  color: rgba(255, 255, 255, 0.92);
   margin-bottom: var(--space-md);
 }
 
@@ -439,6 +515,19 @@ ul {
   background: var(--color-white);
   color: var(--color-charcoal);
   border-color: var(--color-white);
+}
+
+/* Em telas de toque o :hover fica "grudado" depois do toque */
+@media (hover: none) {
+  .hero__nav-btn:hover {
+    background: transparent;
+    color: var(--color-white);
+    border-color: rgba(255, 255, 255, 0.3);
+  }
+
+  .hero__nav-btn:active {
+    background: rgba(255, 255, 255, 0.2);
+  }
 }
 
 .hero__nav-counter {
@@ -894,7 +983,7 @@ ul {
 .footer__tagline {
   font-size: 0.8rem;
   font-weight: 300;
-  color: #8A8380;
+  color: #A59E9A;
 }
 
 .footer__links {
@@ -908,7 +997,7 @@ ul {
   font-weight: 500;
   letter-spacing: 0.15em;
   text-transform: uppercase;
-  color: #8A8380;
+  color: #A59E9A;
   margin-bottom: var(--space-md);
 }
 
@@ -934,7 +1023,7 @@ ul {
 .footer__copyright {
   font-size: 0.75rem;
   font-weight: 300;
-  color: #8A8380;
+  color: #A59E9A;
 }
 
 /* ═══════════════════════════════════════════════════════
@@ -977,6 +1066,17 @@ ul {
     gap: 48px;
   }
 
+  /* Fotos lado a lado com a mesma altura (antes a 1ª ocupava 2 linhas da grade) */
+  .about__image-wrapper,
+  .process__image-wrapper {
+    aspect-ratio: 4 / 5;
+  }
+
+  .about__image-wrapper:first-child,
+  .process__image-wrapper:first-child {
+    grid-row: auto;
+  }
+
   .footer__top {
     flex-direction: column;
     gap: 40px;
@@ -998,8 +1098,13 @@ ul {
     --space-2xl: 4rem;
   }
 
+  /* Hero: CTA em cima, controles do slider numa linha própria embaixo */
+  .hero {
+    min-height: 560px;
+  }
+
   .hero__content {
-    padding-bottom: 60px;
+    padding-bottom: 128px;
   }
 
   .hero__title-line {
@@ -1010,12 +1115,112 @@ ul {
     font-size: 2rem;
   }
 
-  .hero__scroll-indicator {
-    display: none;
+  .hero__tagline {
+    font-size: 0.8rem;
+  }
+
+  .hero__nav {
+    left: var(--container-pad);
+    right: var(--container-pad);
+    bottom: 40px;
+    justify-content: space-between;
+  }
+
+  .hero__nav-btn {
+    width: 44px;
+    height: 44px;
+  }
+
+  .btn {
+    min-height: 48px;
+  }
+
+  /* Texto corrido mais encorpado: peso 200 some em telas pequenas */
+  .about__description,
+  .services__card-text,
+  .process__step-description,
+  .cta-section__text {
+    font-weight: 300;
+  }
+
+  .section-label {
+    font-size: 0.75rem;
+  }
+
+  .services__card-divider {
+    margin-bottom: var(--space-md);
   }
 
   .services__grid {
     gap: 36px;
+  }
+
+  /* Imagens empilhadas em proporção fixa para não esticar a página */
+  .about__image-wrapper,
+  .process__image-wrapper {
+    aspect-ratio: 4 / 3;
+  }
+
+  .about__image-wrapper:first-child,
+  .process__image-wrapper:first-child {
+    aspect-ratio: 4 / 5;
+  }
+
+  .about,
+  .process {
+    padding-top: var(--space-2xl);
+  }
+
+  .process {
+    padding-bottom: var(--space-2xl);
+  }
+
+  .process__steps {
+    gap: 32px;
+  }
+
+  .process__step {
+    padding-bottom: 32px;
+  }
+
+  .motion__title {
+    margin-bottom: var(--space-lg);
+  }
+
+  /* Depoimentos: cards cabem na tela (antes: min-width 450px) */
+  .testimonials__marquee,
+  .testimonials__track {
+    gap: 16px;
+  }
+
+  .testimonial-card {
+    min-width: 0;
+    width: min(80vw, 300px);
+    padding: 28px 24px;
+    font-size: 1rem;
+  }
+
+  .testimonial__author {
+    margin-bottom: 16px;
+  }
+
+  .testimonial__avatar {
+    width: 40px;
+    height: 40px;
+  }
+
+  @keyframes marquee {
+    from {
+      transform: translateX(0);
+    }
+
+    to {
+      transform: translateX(calc(-100% - 16px));
+    }
+  }
+
+  .cta-section {
+    padding-top: var(--space-xl);
   }
 
   .process__step {
@@ -1039,9 +1244,28 @@ ul {
     grid-row: auto;
   }
 
+  /* Rodapé em 2 colunas + contato embaixo; links com área de toque de ~44px */
   .footer__links {
-    flex-direction: column;
-    gap: 32px;
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 32px 24px;
+  }
+
+  .footer__col:last-child {
+    grid-column: 1 / -1;
+  }
+
+  .footer__col-title {
+    margin-bottom: var(--space-xs);
+  }
+
+  .footer__col-list li {
+    margin-bottom: 0;
+  }
+
+  .footer__col-list a {
+    display: inline-block;
+    padding: 11px 0;
   }
 
   .cta-section__title {
@@ -1055,5 +1279,44 @@ ul {
 
   .mobile-nav__link {
     font-size: 1.8rem;
+  }
+}
+/* ═══════════════════════════════════════════════════════
+   RESPONSIVE — CELULAR DEITADO ( altura ≤ 500px )
+   ═══════════════════════════════════════════════════════ */
+
+@media (max-height: 500px) and (orientation: landscape) {
+  /* o hero precisa caber na altura da tela, senão os controles ficam fora da dobra */
+  .hero {
+    min-height: 340px;
+  }
+
+  .hero__content {
+    padding-bottom: 28px;
+  }
+
+  .hero__title {
+    margin-bottom: var(--space-md);
+  }
+
+  .hero__tagline {
+    margin-bottom: var(--space-xs);
+  }
+
+  .hero__nav {
+    bottom: 28px;
+  }
+
+  .mobile-nav {
+    align-items: flex-start;
+    padding-top: 72px;
+  }
+
+  .mobile-nav__list {
+    gap: 12px;
+  }
+
+  .mobile-nav__link {
+    font-size: 1.4rem;
   }
 }

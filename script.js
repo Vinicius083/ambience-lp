@@ -67,16 +67,35 @@ document.addEventListener('DOMContentLoaded', () => {
     }, 300); // Wait for transition
   }
 
-  if (btnPrev && btnNext) {
-    btnPrev.addEventListener('click', () => {
-      currentSlide = (currentSlide === 0) ? heroSlides.length - 1 : currentSlide - 1;
-      updateHeroSlide();
-    });
+  function goToSlide(delta) {
+    currentSlide = (currentSlide + delta + heroSlides.length) % heroSlides.length;
+    updateHeroSlide();
+  }
 
-    btnNext.addEventListener('click', () => {
-      currentSlide = (currentSlide === heroSlides.length - 1) ? 0 : currentSlide + 1;
-      updateHeroSlide();
-    });
+  if (btnPrev && btnNext) {
+    btnPrev.addEventListener('click', () => goToSlide(-1));
+    btnNext.addEventListener('click', () => goToSlide(1));
+  }
+
+  // Swipe horizontal no hero (celular). Ignora gestos majoritariamente verticais,
+  // para não atrapalhar a rolagem da página.
+  const heroSection = document.getElementById('hero');
+  let touchStartX = 0;
+  let touchStartY = 0;
+
+  if (heroSection) {
+    heroSection.addEventListener('touchstart', (e) => {
+      touchStartX = e.changedTouches[0].clientX;
+      touchStartY = e.changedTouches[0].clientY;
+    }, { passive: true });
+
+    heroSection.addEventListener('touchend', (e) => {
+      const dx = e.changedTouches[0].clientX - touchStartX;
+      const dy = e.changedTouches[0].clientY - touchStartY;
+      if (Math.abs(dx) > 50 && Math.abs(dx) > Math.abs(dy) * 1.5) {
+        goToSlide(dx < 0 ? 1 : -1);
+      }
+    }, { passive: true });
   }
 
   // ═══════════════════════════════════════════════════
@@ -112,21 +131,35 @@ document.addEventListener('DOMContentLoaded', () => {
   // MOBILE MENU — Toggle
   // ═══════════════════════════════════════════════════
 
-  function toggleMobileMenu() {
-    menuToggle.classList.toggle('active');
-    mobileNav.classList.toggle('active');
-    document.body.style.overflow = mobileNav.classList.contains('active') ? 'hidden' : '';
+  function setMobileMenu(open) {
+    menuToggle.classList.toggle('active', open);
+    mobileNav.classList.toggle('active', open);
+    document.body.classList.toggle('menu-open', open);
+    document.body.style.overflow = open ? 'hidden' : '';
+    menuToggle.setAttribute('aria-expanded', String(open));
+    menuToggle.setAttribute('aria-label', open ? 'Fechar menu' : 'Abrir menu');
   }
 
-  menuToggle.addEventListener('click', toggleMobileMenu);
+  menuToggle.addEventListener('click', () => {
+    setMobileMenu(!mobileNav.classList.contains('active'));
+  });
 
   // Close mobile nav on link click
   mobileLinks.forEach(link => {
-    link.addEventListener('click', () => {
-      menuToggle.classList.remove('active');
-      mobileNav.classList.remove('active');
-      document.body.style.overflow = '';
-    });
+    link.addEventListener('click', () => setMobileMenu(false));
+  });
+
+  // Escape fecha o menu e devolve o foco ao botão
+  document.addEventListener('keydown', (e) => {
+    if (e.key === 'Escape' && mobileNav.classList.contains('active')) {
+      setMobileMenu(false);
+      menuToggle.focus();
+    }
+  });
+
+  // Girar o aparelho / ampliar a janela além do breakpoint não deixa o menu preso aberto
+  window.matchMedia('(min-width: 1025px)').addEventListener('change', (e) => {
+    if (e.matches) setMobileMenu(false);
   });
 
   // ═══════════════════════════════════════════════════

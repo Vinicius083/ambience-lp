@@ -62,7 +62,8 @@
           <li><a href="#contact" class="header__nav-link" id="nav-contact">Contato</a></li>
         </ul>
       </nav>
-      <button class="header__menu-btn" id="menu-toggle" aria-label="Abrir menu">
+      <button class="header__menu-btn" id="menu-toggle" type="button" aria-label="Abrir menu" aria-expanded="false"
+        aria-controls="mobile-nav">
         <span></span>
         <span></span>
         <span></span>
@@ -71,7 +72,7 @@
   </header>
 
   <!-- Mobile Navigation Overlay -->
-  <div class="mobile-nav" id="mobile-nav">
+  <nav class="mobile-nav" id="mobile-nav" aria-label="Menu principal">
     <ul class="mobile-nav__list">
       <li><a href="#hero" class="mobile-nav__link" id="mobile-nav-inicio">Início</a></li>
       <li><a href="#about" class="mobile-nav__link" id="mobile-nav-about">Sobre Nós</a></li>
@@ -79,7 +80,7 @@
       <li><a href="#percurso" class="mobile-nav__link" id="mobile-nav-percurso">Percurso</a></li>
       <li><a href="#contact" class="mobile-nav__link" id="mobile-nav-contact">Contato</a></li>
     </ul>
-  </div>
+  </nav>
 
   <!-- ═══════════════════════════════════════════════ -->
   <!-- MAIN / HERO SECTION                             -->
@@ -92,7 +93,7 @@
       </div>
       <div class="hero__content" id="hero-content">
         <p class="hero__tagline">projetando histórias</p>
-        <h1 class="hero__title">
+        <h1 class="hero__title" aria-live="polite">
           <span class="hero__title-line" id="hero-title-1">Residência</span>
           <span class="hero__title-line hero__title-line--italic" id="hero-title-2">Quinta do Lago</span>
         </h1>
@@ -118,11 +119,10 @@
           </svg>
         </button>
       </div>
-      </div>
     </section>
 
     <!-- ═══════════════════════════════════════════════ -->
-    <!-- SOBRE NÓS SECTION                               -->
+    <!-- SOBRE NÓS SECTION                              -->
     <!-- ═══════════════════════════════════════════════ -->
     <section class="about" id="about">
       <div class="about__container">
@@ -139,10 +139,10 @@
         </div>
         <div class="about__images fade-in">
           <div class="about__image-wrapper" id="about-image-1">
-            <img src="images/project3.png" alt="Design de quarto" class="about__image">
+            <img src="images/project3.png" alt="Design de quarto" class="about__image" loading="lazy" decoding="async">
           </div>
           <div class="about__image-wrapper" id="about-image-2">
-            <img src="images/project4.png" alt="Design de banheiro" class="about__image">
+            <img src="images/project4.png" alt="Design de banheiro" class="about__image" loading="lazy" decoding="async">
           </div>
         </div>
       </div>
@@ -227,10 +227,10 @@
         </div>
         <div class="process__visual fade-in">
           <div class="process__image-wrapper" id="process-image-1">
-            <img src="images/project1.png" alt="Projeto residencial" class="process__image">
+            <img src="images/project1.png" alt="Projeto residencial" class="process__image" loading="lazy" decoding="async">
           </div>
           <div class="process__image-wrapper" id="process-image-2">
-            <img src="images/project2.png" alt="Projeto cozinha" class="process__image">
+            <img src="images/project2.png" alt="Projeto cozinha" class="process__image" loading="lazy" decoding="async">
           </div>
         </div>
       </div>
@@ -245,7 +245,7 @@
         <h2 class="motion__title">o conceito ambiance</h2>
         <div class="motion__video-wrapper">
           <iframe width="100%" height="100%" src="https://www.youtube.com/embed/SSkL38xeRcM"
-            title="o conceito ambiance." frameborder="0"
+            title="o conceito ambiance." loading="lazy"
             allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
             referrerpolicy="strict-origin-when-cross-origin" allowfullscreen></iframe>
         </div>
