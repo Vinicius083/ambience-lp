@@ -128,6 +128,27 @@ document.addEventListener('DOMContentLoaded', () => {
   fadeElements.forEach(el => fadeObserver.observe(el));
 
   // ═══════════════════════════════════════════════════
+  // VÍDEO INSTITUCIONAL — só carrega quando a pessoa pede
+  // ═══════════════════════════════════════════════════
+
+  const videoPlayer = document.getElementById('about-video');
+  if (videoPlayer) {
+    const video = videoPlayer.querySelector('video');
+    const playBtn = videoPlayer.querySelector('.video-player__play');
+
+    playBtn.addEventListener('click', () => {
+      videoPlayer.classList.add('is-playing');
+      video.controls = true;
+      video.play().catch(() => {
+        // reprodução bloqueada: devolve o botão para uma nova tentativa
+        videoPlayer.classList.remove('is-playing');
+        video.controls = false;
+      });
+      video.focus();
+    });
+  }
+
+  // ═══════════════════════════════════════════════════
   // MOBILE MENU — Toggle
   // ═══════════════════════════════════════════════════
 
